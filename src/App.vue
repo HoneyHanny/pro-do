@@ -6,34 +6,20 @@ import Footer from './components/Footer.vue'
 import Hero from './components/Hero.vue'
 import Statistics from './components/Statistics.vue'
 import { Separator } from './components/ui/separator'
-import { ref } from 'vue'
+import { defineComponent, provide, reactive } from 'vue'
+import { SharedData } from './lib/types/types'
+import { STATISTICS_PROVIDER_KEY } from './lib/constants/globals'
 
-export default {
-  data() {
+export default defineComponent({
+  setup() {
+
+    const sharedData = reactive<SharedData>({ total: 0, todo: 0, done: 0})
+    console.log(STATISTICS_PROVIDER_KEY)
+    provide(STATISTICS_PROVIDER_KEY, sharedData)
+
     return {
-      hero: true,
-      sharedData: {
-        total: ref(0),
-        todo: ref(0),
-        done: ref(0),
-      }
+      sharedData
     }
-  },
-  provide() {
-    return {
-      globalData: this
-    }
-  },
-  methods: {
-    handleTotalChange(num: number) {
-      this.sharedData.total = num;
-    },
-    handleTodoChange(num: number) {
-      this.sharedData.todo = num;
-    },
-    handleDoneChange(num: number) {
-      this.sharedData.done = num;
-    },
   },
   components: {
     TodoList,
@@ -43,7 +29,7 @@ export default {
     Statistics,
     Separator,
   }
-}
+})
 
 </script>
 
@@ -51,7 +37,7 @@ export default {
   <Header />
   <div class="flex flex-col">
     <Hero />
-    <Statistics :total="sharedData.total" :todo="sharedData.todo" :done="sharedData.done" />
+    <Statistics />
     <main>
       <TodoList />
     </main>

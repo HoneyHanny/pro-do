@@ -6,11 +6,13 @@ import { Plus } from "lucide-vue-next"
 
 import Todo from './Todo.vue'
 
-import { TodoInterface } from '@/lib/types/types'
-import TooltipProvider from "./ui/tooltip/TooltipProvider.vue"
-import TooltipTrigger from "./ui/tooltip/TooltipTrigger.vue"
-import Tooltip from "./ui/tooltip/Tooltip.vue"
-import TooltipContent from "./ui/tooltip/TooltipContent.vue"
+import { SharedData, TodoInterface } from '@/lib/types/types'
+import { TooltipProvider } from "./ui/tooltip/index"
+import { TooltipTrigger } from "./ui/tooltip/index"
+import { Tooltip } from "./ui/tooltip/index"
+import { TooltipContent } from "./ui/tooltip/index"
+import { computed, defineComponent, inject, reactive, ref } from "vue"
+import { STATISTICS_PROVIDER_KEY } from "@/lib/constants/globals"
 
 const LOCAL_STORAGE_KEY: string = 'vue-shadcn-todos'
 
@@ -18,11 +20,72 @@ const localTodos: TodoInterface[] = JSON.parse(localStorage.getItem(LOCAL_STORAG
 
 const setLocal = (todos: TodoInterface[]) => localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos))
 
-export default {
-  inject: ['globalData'],
+export default defineComponent({
+  setup() {
+
+    const title = ref<string>('')
+
+    const sharedData = inject(STATISTICS_PROVIDER_KEY) as SharedData
+    const todos = reactive(localTodos)
+
+    const numberOfTasks = computed(() => {
+      return todos.length  
+    })
+    const numberOfNotDone = computed(() => {
+      const filtered = todos.filter((t: TodoInterface) => !t.done)
+      return filtered.length
+    })
+    const numberOfDone = computed(() => {
+      const filtered = todos.filter((t: TodoInterface) => t.done)
+      return filtered.length
+    })
+    const done = computed(() => {
+      return todos.filter((t: TodoInterface) => t.done)
+    })
+    const notDone = computed(() => {
+      return todos.filter((t: TodoInterface) => !t.done)
+    })
+    const sortByDone = computed(() => {
+      return todos.sort((a: TodoInterface, b: TodoInterface) => (a.done === b.done) ? 0 : a.done ? -1 : 1)
+    })
+
+    const updateStats = () => {
+      if (sharedData) {
+        sharedData.total = numberOfTasks.value
+        sharedData.todo = numberOfNotDone.value
+        sharedData.done = numberOfDone.value
+      }
+    }
+    const handleChange = (e: any) => {
+      title.value = e.currentTarget.value
+    }
+
+    // TODO: Read back ChatGPT (How to update array states in Vue)
+    // todos.values = sortByDone.value
+    updateStats()
+
+    return {
+      // states
+      title,
+      todos,
+      sharedData,
+
+      // functions
+      updateStats,
+      handleChange,
+
+      // computed
+      numberOfTasks,
+      numberOfNotDone,
+      numberOfDone,
+      done,
+      notDone,
+      sortByDone
+    }
+  },
   created() {
     // const globalData: { hero: boolean, sharedData: { total: number, todo: number, done: number } } | undefined = inject('globalData')
-    this.todos.sort((a, b) => (a.done === b.done) ? 0 : a.done ? 1 : -1)
+    this.todos.sort((a: TodoInterface, b: TodoInterface) => (a.done === b.done) ? 0 : a.done ? 1 : -1)
     this.updateStats()
   },
   data() {
@@ -32,17 +95,6 @@ export default {
     }
   },
   methods: {
-    updateStats() {
-      // @ts-ignore
-      if (this.globalData && this.globalData.sharedData) {
-        // @ts-ignore
-        this.globalData.sharedData.total = this.numberOfTasks
-        // @ts-ignore
-        this.globalData.sharedData.todo = this.numberNotOfDone
-        // @ts-ignore
-        this.globalData.sharedData.done = this.numberOfDone
-      }
-    },
     handleChange(e: any) {
       this.title = e.currentTarget.value
     },
@@ -83,29 +135,7 @@ export default {
     TooltipTrigger,
     TooltipContent
   },
-  computed: {
-    numberOfDone() {
-      const filtered = this.todos.filter((t: TodoInterface) => t.done)
-      return filtered.length
-    },
-    numberNotOfDone() {
-      const filtered = this.todos.filter((t: TodoInterface) => !t.done)
-      return filtered.length
-    },
-    numberOfTasks() {
-      return this.todos.length
-    },
-    done() {
-      return this.todos.filter((t: TodoInterface) => t.done)
-    },
-    notDone() {
-      return this.todos.filter((t: TodoInterface) => !t.done)
-    },
-    sortByDone() {
-      return this.todos.sort((a: TodoInterface, b: TodoInterface) => (a.done === b.done) ? 0 : a.done ? -1 : 1)
-    },
-  }
-}
+})
 </script>
 
 <template>

@@ -10,17 +10,18 @@
   </Card>
 </template>
 
-<script>
+<script lang="ts">
 import { Checkbox } from './ui/checkbox'
 import { Card } from './ui/card'
 import { Trash } from 'lucide-vue-next'
+import { defineComponent } from 'vue'
 
-export default {
+export default defineComponent({
   props: ['title', 'done'],
   components: {
     Trash,
     Checkbox,
     Card,
   }
-}
+})
 </script>

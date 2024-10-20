@@ -1,24 +1,34 @@
+<script lang="ts">
+import { STATISTICS_PROVIDER_KEY } from '@/lib/constants/globals';
+import { SharedData } from '@/lib/types/types';
+import { defineComponent, inject } from 'vue';
+
+export default defineComponent({
+  setup() {
+    const sharedData = inject(STATISTICS_PROVIDER_KEY) as SharedData
+
+    return {
+      sharedData
+    }
+  }
+})
+</script>
+
 <template>
   <div class="mt-8 mb-8 flex justify-center items-center flex-col">
     <div class="flex justify-center items-center gap-8">
       <div class="flex flex-col gap-4 justify-center items-center">
         <h3>Todo</h3>
-        {{ globalData.sharedData.todo }}
+        {{ sharedData.todo }}
       </div>
       <div class="flex flex-col gap-4 justify-center items-center">
         <h3>Done</h3>
-        {{ globalData.sharedData.done }}
+        {{ sharedData.done }}
       </div>
       <div class="flex flex-col gap-4 justify-center items-center">
         <h3>Total</h3>
-        {{ globalData.sharedData.total }}
+        {{ sharedData.total }}
       </div>
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  inject: ['globalData']
-}
-</script>

@@ -21,15 +21,15 @@
   </div>
 </template>
 
-<script>
-  import { Plus } from 'lucide-vue-next'
-  import Logo from './Logo.vue'
+<script lang="ts">
+import { Plus } from 'lucide-vue-next'
+import Logo from './Logo.vue'
+import { defineComponent } from 'vue';
 
-  export default {
-    components: {
-      Plus,
-      Logo,
-    },
-  }
-
+export default defineComponent({
+  components: {
+    Plus,
+    Logo,
+  },
+})
 </script>

@@ -13,17 +13,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Github } from 'lucide-vue-next'
 import { ListTodo } from 'lucide-vue-next'
-export default {
+import { defineComponent } from 'vue';
+export default defineComponent({
   components: {
     Github,
     ListTodo,
   }
-}
+})
 </script>
-
-<style>
-
-</style>
